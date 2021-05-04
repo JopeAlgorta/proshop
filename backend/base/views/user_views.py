@@ -45,7 +45,7 @@ def signupUser(request):
     except KeyError as e:
         return Response({'detail': f'Field {e} is required.'}, status.HTTP_400_BAD_REQUEST)
     except:
-        return Response({'detail': 'Email already in use.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'Email already in use.'}, status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
