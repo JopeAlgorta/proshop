@@ -27,7 +27,7 @@ class UserSerializerWithToken(UserSerializer):
         fields = ['id', 'isAdmin', 'username', 'email', 'name', 'token']
 
     def get_token(self, obj):
-        return str(RefreshToken.for_user(obj))
+        return str(RefreshToken.for_user(obj).access_token)
 
 
 class ProductSerializer(serializers.ModelSerializer):

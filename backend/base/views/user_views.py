@@ -48,11 +48,27 @@ def signupUser(request):
         return Response({'detail': 'Email already in use.'}, status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
-def getUserProfile(request):
+def getOrUpdateUserProfile(request):
     user = request.user
-    serializer = UserSerializer(user, many=False)
+
+    if request.method == 'GET':
+        serializer = UserSerializer(user, many=False)
+
+    if request.method == 'PUT':
+        serializer = UserSerializerWithToken(user, many=False)
+
+        data = request.data
+        user.first_name = data['name'] if 'name' in data else user.first_name
+        user.email = data['email'] if 'email' in data else user.email
+        user.username = data['email'] if 'email' in data else user.username
+
+        if 'password' in data and data['password'] != '':
+            user.password = make_password(data['password'])
+
+        user.save()
+
     return Response(serializer.data)
 
 
