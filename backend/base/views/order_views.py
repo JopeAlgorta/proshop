@@ -10,53 +10,61 @@ from ..serializers import ProductSerializer, OrderSerializer
 from datetime import datetime
 
 
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 @permission_classes([IsAuthenticated])
-def addOrderItems(request):
+def createOrGetOrders(request):
     user = request.user
-    data = request.data
 
-    orderItems = data['orderItems']
+    if request.method == 'POST':
+        data = request.data
 
-    if not orderItems or len(orderItems) == 0:
-        return Response({'detail': 'No order items.'}, status.HTTP_400_BAD_REQUEST)
+        orderItems = data['orderItems']
 
-    # Create order.
-    order = Order.objects.create(
-        user=user,
-        paymentMethod=data['paymentMethod'],
-        taxPrice=data['taxPrice'],
-        shippingPrice=data['shippingPrice'],
-        totalPrice=data['totalPrice']
-    )
+        if not orderItems or len(orderItems) == 0:
+            return Response({'detail': 'No order items.'}, status.HTTP_400_BAD_REQUEST)
 
-    # Create shipping address.
-    shipping = ShippingAddress.objects.create(
-        order=order,
-        address=data['shippingAddress']['address'],
-        city=data['shippingAddress']['city'],
-        postalCode=data['shippingAddress']['postalCode'],
-        country=data['shippingAddress']['country']
-    )
-
-    # Create order items and link them to an order.
-    for item in orderItems:
-        product = get_object_or_404(Product, id=item['product'])
-        item = OrderItem.objects.create(
-            product=product,
-            order=order,
-            name=product.name,
-            qty=item['qty'],
-            price=product.price,
-            image=product.image.url
+        # Create order.
+        order = Order.objects.create(
+            user=user,
+            paymentMethod=data['paymentMethod'],
+            taxPrice=data['taxPrice'],
+            shippingPrice=data['shippingPrice'],
+            totalPrice=data['totalPrice']
         )
 
-        # Update stock.
-        product.countInStock -= item.qty
-        product.save()
+        # Create shipping address.
+        shipping = ShippingAddress.objects.create(
+            order=order,
+            address=data['shippingAddress']['address'],
+            city=data['shippingAddress']['city'],
+            postalCode=data['shippingAddress']['postalCode'],
+            country=data['shippingAddress']['country']
+        )
 
-    serializer = OrderSerializer(order, many=False)
-    return Response(serializer.data)
+        # Create order items and link them to an order.
+        for item in orderItems:
+            product = get_object_or_404(Product, id=item['product'])
+            item = OrderItem.objects.create(
+                product=product,
+                order=order,
+                name=product.name,
+                qty=item['qty'],
+                price=product.price,
+                image=product.image.url
+            )
+
+            # Update stock.
+            product.countInStock -= item.qty
+            product.save()
+
+        serializer = OrderSerializer(order, many=False)
+        return Response(serializer.data)
+
+    if request.method == 'GET':
+        orders = user.orders.all()
+        serializer = OrderSerializer(orders, many=True)
+
+        return Response(serializer.data)
 
 
 @api_view(['GET'])
