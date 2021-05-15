@@ -1,6 +1,13 @@
 import axios from 'axios';
 import { CART_CLEAR_ITEMS } from '../constants/cartConstants';
-import { ORDER_CREATE_FAILED, ORDER_CREATE_REQUEST, ORDER_CREATE_SUCCESS } from '../constants/orderConstants';
+import {
+	ORDER_CREATE_FAILED,
+	ORDER_CREATE_REQUEST,
+	ORDER_CREATE_SUCCESS,
+	ORDER_DETAILS_FAILED,
+	ORDER_DETAILS_REQUEST,
+	ORDER_DETAILS_SUCCESS
+} from '../constants/orderConstants';
 
 export const createOrder = order => async (dispatch, getState) => {
 	try {
@@ -21,6 +28,27 @@ export const createOrder = order => async (dispatch, getState) => {
 	} catch (e) {
 		dispatch({
 			type: ORDER_CREATE_FAILED,
+			payload: e.response && e.response.data.detail ? e.response.data.detail : e.message
+		});
+	}
+};
+
+export const getOrderDetails = id => async (dispatch, getState) => {
+	try {
+		dispatch({ type: ORDER_DETAILS_REQUEST });
+
+		const {
+			userLogin: { userInfo }
+		} = getState();
+
+		const { data } = await axios(`/api/orders/${id}/`, {
+			headers: { Authorization: `Bearer ${userInfo.token}` }
+		});
+
+		dispatch({ type: ORDER_DETAILS_SUCCESS, payload: data });
+	} catch (e) {
+		dispatch({
+			type: ORDER_DETAILS_FAILED,
 			payload: e.response && e.response.data.detail ? e.response.data.detail : e.message
 		});
 	}
