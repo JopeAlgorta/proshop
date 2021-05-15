@@ -47,8 +47,8 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='order_items')
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='order_items', null=True)
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, related_name='order_items', null=True)
     name = models.CharField(max_length=100, null=True, blank=True)
     qty = models.IntegerField(default=0, null=True, blank=True)
     price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
@@ -62,5 +62,6 @@ class ShippingAddress(models.Model):
     order = models.OneToOneField(Order, on_delete=models.CASCADE, null=True, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=50, null=True, blank=True)
+    country = models.CharField(max_length=50, null=True, blank=True)
     postalCode = models.CharField(max_length=10, null=True, blank=True)
     shippingPrice = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
