@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from ..models import Product, Order, OrderItem, ShippingAddress
 from ..serializers import ProductSerializer, OrderSerializer
+from datetime import datetime
 
 
 @api_view(['POST'])
@@ -69,3 +70,15 @@ def getOrderById(request, pk):
         return Response(serializer.data)
 
     return Response({'detail': 'You are not alowed to see this order.'}, status.HTTP_403_FORBIDDEN)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def updateOrderToPaid(request, pk):
+    order = get_object_or_404(Order, id=pk)
+
+    order.isPaid = True
+    order.paidAt = datetime.now()
+    order.save()
+
+    return Response('Order was paid successfully.')
