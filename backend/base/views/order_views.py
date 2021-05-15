@@ -56,3 +56,16 @@ def addOrderItems(request):
 
     serializer = OrderSerializer(order, many=False)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getOrderById(request, pk):
+    user = request.user
+    order = get_object_or_404(Order, id=pk)
+
+    if user.is_staff or order.user == user:
+        serializer = OrderSerializer(order, many=False)
+        return Response(serializer.data)
+
+    return Response({'detail': 'You are not alowed to see this order.'}, status.HTTP_403_FORBIDDEN)
