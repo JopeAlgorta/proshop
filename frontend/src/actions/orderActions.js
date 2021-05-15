@@ -6,7 +6,10 @@ import {
 	ORDER_CREATE_SUCCESS,
 	ORDER_DETAILS_FAILED,
 	ORDER_DETAILS_REQUEST,
-	ORDER_DETAILS_SUCCESS
+	ORDER_DETAILS_SUCCESS,
+	ORDER_PAY_FAILED,
+	ORDER_PAY_REQUEST,
+	ORDER_PAY_SUCCESS
 } from '../constants/orderConstants';
 
 export const createOrder = order => async (dispatch, getState) => {
@@ -49,6 +52,27 @@ export const getOrderDetails = id => async (dispatch, getState) => {
 	} catch (e) {
 		dispatch({
 			type: ORDER_DETAILS_FAILED,
+			payload: e.response && e.response.data.detail ? e.response.data.detail : e.message
+		});
+	}
+};
+
+export const payOrder = (id, paymentResult) => async (dispatch, getState) => {
+	try {
+		dispatch({ type: ORDER_PAY_REQUEST });
+
+		const {
+			userLogin: { userInfo }
+		} = getState();
+
+		const { data } = await axios.put(`/api/orders/${id}/pay/`, paymentResult, {
+			headers: { Authorization: `Bearer ${userInfo.token}` }
+		});
+
+		dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
+	} catch (e) {
+		dispatch({
+			type: ORDER_PAY_FAILED,
 			payload: e.response && e.response.data.detail ? e.response.data.detail : e.message
 		});
 	}
