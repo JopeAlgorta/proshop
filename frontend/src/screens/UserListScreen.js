@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-import { Button, Table } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Button, Modal, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
-import { getUsers } from '../actions/userActions';
+import { deleteUser, getUsers } from '../actions/userActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 
@@ -10,13 +10,19 @@ const UserListScreen = ({ history }) => {
 	const dispatch = useDispatch();
 	const { users, loading, error } = useSelector(state => state.userList);
 	const { userInfo } = useSelector(state => state.userLogin);
+	const { success } = useSelector(state => state.userDelete);
+
+	const [modal, setModal] = useState({ show: false, id: '' });
 
 	useEffect(() => {
 		if (!userInfo || !userInfo.isAdmin) return history.push('/');
 		dispatch(getUsers());
-	}, [dispatch, userInfo, history]);
+	}, [dispatch, userInfo, history, success]);
 
-	const onDelete = id => {};
+	const onDeleteConfirm = () => {
+		dispatch(deleteUser(modal.id));
+		setModal({ id: '', show: false });
+	};
 
 	return (
 		<div>
@@ -59,7 +65,10 @@ const UserListScreen = ({ history }) => {
 											<i className='fas fa-edit'></i>
 										</Button>
 									</LinkContainer>
-									<Button variant='danger' className='btn-sm' onClick={e => onDelete(u.id)}>
+									<Button
+										variant='danger'
+										className='btn-sm'
+										onClick={e => setModal({ show: true, id: u.id })}>
 										<i className='fas fa-trash'></i>
 									</Button>
 								</td>
@@ -68,6 +77,20 @@ const UserListScreen = ({ history }) => {
 					</tbody>
 				</Table>
 			)}
+			<Modal show={modal.show} onHide={() => setModal({ id: '', show: false })}>
+				<Modal.Header closeButton>
+					<Modal.Title>Deleting user...</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>Are you sure to delete this user?</Modal.Body>
+				<Modal.Footer>
+					<Button variant='secondary' onClick={() => setModal({ id: '', show: false })}>
+						Close
+					</Button>
+					<Button variant='danger' onClick={onDeleteConfirm}>
+						Delete
+					</Button>
+				</Modal.Footer>
+			</Modal>
 		</div>
 	);
 };
