@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Form, Row } from 'react-bootstrap';
+import { Button, Col, Form, Row, Table } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { getOrders } from '../actions/orderActions';
 import { getUserDetails, updateUser } from '../actions/userActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
@@ -27,12 +29,14 @@ const ProfileScreen = ({ history }) => {
 	};
 
 	const { success } = useSelector(state => state.userUpdate);
+	const { orders, loading: loadingOrders, error: ordersError } = useSelector(state => state.orderList);
 
 	useEffect(() => {
 		if (!userInfo) history.push('/login');
 		else if (!user || !user.name || success) {
 			dispatch({ type: USER_UPDATE_RESET });
 			dispatch(getUserDetails());
+			dispatch(getOrders());
 		} else {
 			setName(user.name);
 			setEmail(user.email);
@@ -88,6 +92,50 @@ const ProfileScreen = ({ history }) => {
 			</Col>
 			<Col md={9}>
 				<h2>My Orders</h2>
+				{loadingOrders ? (
+					<Loader />
+				) : ordersError ? (
+					<Message variant='danger'>{ordersError}</Message>
+				) : (
+					<Table striped responsive className='table-sm'>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Date</th>
+								<th>Total</th>
+								<th>Paid</th>
+								<th>Delivered</th>
+							</tr>
+						</thead>
+						<tbody>
+							{orders.map(o => (
+								<tr key={o.id}>
+									<Link to={`/order/${o.id}`}>
+										<td>{o.id}</td>
+									</Link>
+									<td>{new Date(o.createdAt).toDateString()}</td>
+									<td>$ {o.totalPrice}</td>
+									{o.isPaid ? (
+										<td style={{ color: 'green' }}>
+											{' '}
+											<i className='fas fa-check'></i>{' '}
+										</td>
+									) : (
+										<td style={{ color: 'red' }}> &#10008; </td>
+									)}
+									{o.isDelivered ? (
+										<td style={{ color: 'green' }}>
+											{' '}
+											<i className='fas fa-check'></i>{' '}
+										</td>
+									) : (
+										<td style={{ color: 'red' }}> &#10008; </td>
+									)}
+								</tr>
+							))}
+						</tbody>
+					</Table>
+				)}
 			</Col>
 		</Row>
 	);
