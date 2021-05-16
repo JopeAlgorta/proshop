@@ -81,9 +81,27 @@ def getUsers(request):
     return Response(serializer.data)
 
 
-@api_view(['DELETE'])
+@api_view(['DELETE', 'PUT', 'GET'])
 @permission_classes([IsAdminUser])
-def deleteUser(request, pk):
+def updateGetOrDeleteUser(request, pk):
     user = get_object_or_404(User, id=pk)
-    user.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+
+    if request.method == 'GET':
+        serializer = UserSerializer(user, many=False)
+        return Response(serializer.data)
+
+    if request.method == 'DELETE':
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    if request.method == 'PUT':
+        data = request.data
+
+        user.first_name = data['name'] if 'name' in data else user.first_name
+        user.email = data['email'] if 'email' in data else user.email
+        user.username = data['email'] if 'email' in data else user.username
+        user.is_staff = data['isAdmin'] if 'isAdmin' in data else user.is_staff
+        user.save()
+
+        serializer = UserSerializer(user, many=False)
+        return Response(serializer.data)

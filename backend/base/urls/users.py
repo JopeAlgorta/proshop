@@ -7,5 +7,5 @@ urlpatterns = [
     path('signup/', views.signupUser, name='register_user'),
     path('login/', views.MyTokenObtainPairView.as_view(), name='login_user'),
     path('profile/', views.getOrUpdateUserProfile, name='user_profile'),
-    path('<str:pk>/', views.deleteUser, name='delete_user')
+    path('<str:pk>/', views.updateGetOrDeleteUser, name='delete_get_or_update_user')
 ]
