@@ -65,7 +65,8 @@ export const payOrder = (id, paymentResult) => async (dispatch, getState) => {
 		dispatch({ type: ORDER_PAY_REQUEST });
 
 		const {
-			userLogin: { userInfo }
+			userLogin: { userInfo },
+			orderDetails: { order }
 		} = getState();
 
 		const { data } = await axios.put(`/api/orders/${id}/pay/`, paymentResult, {
@@ -73,6 +74,7 @@ export const payOrder = (id, paymentResult) => async (dispatch, getState) => {
 		});
 
 		dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
+		dispatch({ type: ORDER_DETAILS_SUCCESS, payload: { ...order, isPaid: true } });
 	} catch (e) {
 		dispatch({
 			type: ORDER_PAY_FAILED,
