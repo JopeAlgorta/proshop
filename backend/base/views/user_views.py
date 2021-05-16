@@ -8,6 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from ..models import User
 from ..serializers import UserSerializer, UserSerializerWithToken
+from django.shortcuts import get_object_or_404
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -78,3 +79,11 @@ def getUsers(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def deleteUser(request, pk):
+    user = get_object_or_404(User, id=pk)
+    user.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
