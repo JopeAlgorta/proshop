@@ -357,3 +357,4 @@ sketch
 myenv/
 backend/db.sqlite3
 backend/.idea
+backend/static/images/**
