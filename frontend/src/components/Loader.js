@@ -5,7 +5,7 @@ const Loader = () => {
 	return (
 		<div
 			style={{
-				minHeight: '70vh',
+				minHeight: '100%',
 				display: 'flex',
 				justifyContent: 'center',
 				alignItems: 'center'
@@ -14,8 +14,9 @@ const Loader = () => {
 				animation='border'
 				role='status'
 				style={{
-					height: '100px',
-					width: '100px',
+					maxHeight: '90%',
+					height: '50px',
+					width: '50px',
 					margin: 'auto'
 				}}>
 				<span className='sr-only'>Loading...</span>

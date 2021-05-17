@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Col, Image, ListGroup, Row } from 'react-bootstrap';
+import { Button, Card, Col, Image, ListGroup, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { PayPalButton } from 'react-paypal-button-v2';
-import { getOrderDetails, payOrder } from '../actions/orderActions';
+import { deliverOrder, getOrderDetails, payOrder } from '../actions/orderActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import { ORDER_PAY_RESET } from '../constants/orderConstants';
+import { ORDER_DELIVER_RESET, ORDER_PAY_RESET } from '../constants/orderConstants';
 
-const OrderScreen = ({ match, location }) => {
+const OrderScreen = ({ match, location, history }) => {
 	const dispatch = useDispatch();
 	const { order, error, loading } = useSelector(state => state.orderDetails);
+	const { userInfo } = useSelector(state => state.userLogin);
 	const { loading: loadingPay, success: successPay } = useSelector(state => state.orderPay);
+	const { loading: loadingDeliver, success: successDeliver } = useSelector(state => state.orderDeliver);
 
 	const [sdkReady, setSdkReady] = useState(false);
 	const [referrer, setReferrer] = useState(location.search ? location.search.split('=')[1] : '');
@@ -33,23 +35,34 @@ const OrderScreen = ({ match, location }) => {
 	};
 
 	useEffect(() => {
-		if (!order || successPay || order.id !== Number(orderId)) {
+		if (!order || successPay || successDeliver || order.id !== Number(orderId)) {
 			dispatch({ type: ORDER_PAY_RESET });
+			dispatch({ type: ORDER_DELIVER_RESET });
 			dispatch(getOrderDetails(orderId));
 		} else if (!order.isPaid) {
 			if (!window.paypal) addPayPalScript();
 			else setSdkReady(true);
 		}
-	}, [order, orderId, dispatch, successPay]);
+	}, [order, orderId, dispatch, successPay, successDeliver]);
 
 	const onPaymentSuccess = paymentResult => {
 		dispatch(payOrder(orderId, paymentResult));
 	};
+
+	const onDeliverOrder = () => {
+		dispatch(deliverOrder(orderId));
+	};
+
 	if (loading) return <Loader />;
 	else if (error) return <Message variant='danger'>{error}</Message>;
 	return (
 		<div>
 			{referrer && <Message variant='success'>Your order has been successfully placed!</Message>}
+			<Row className='mb-3'>
+				<Button variant='light' onClick={() => history.goBack()}>
+					<i className='fas fa-arrow-left'></i> Go Back
+				</Button>
+			</Row>
 			<h1>Order: {orderId}</h1>
 			<Row>
 				<Col md={8}>
@@ -72,7 +85,9 @@ const OrderScreen = ({ match, location }) => {
 								{order.shippingAddress.country}
 							</p>
 							{order.isDelivered ? (
-								<Message variant='success'>Delivered on: {order.deliveredAt}</Message>
+								<Message variant='success'>
+									Delivered on: {new Date(order.deliveredAt).toDateString()}
+								</Message>
 							) : (
 								<Message variant='warning'>Not delivered yet.</Message>
 							)}
@@ -148,7 +163,7 @@ const OrderScreen = ({ match, location }) => {
 									<Col>$ {order.totalPrice}</Col>
 								</Row>
 							</ListGroup.Item>
-							{!order.isPaid && (
+							{!order.isPaid && order.user.id === userInfo.id && (
 								<ListGroup.Item>
 									{loadingPay && <Loader />}
 									{!sdkReady ? (
@@ -159,6 +174,16 @@ const OrderScreen = ({ match, location }) => {
 											onSuccess={onPaymentSuccess}
 										/>
 									)}
+								</ListGroup.Item>
+							)}
+							{userInfo.isAdmin && (
+								<ListGroup.Item>
+									<Button
+										disabled={!order.isPaid || order.isDelivered}
+										className='btn-block'
+										onClick={onDeliverOrder}>
+										{loadingDeliver ? <Loader /> : 'Deliver'}
+									</Button>
 								</ListGroup.Item>
 							)}
 						</ListGroup>

@@ -1,8 +1,15 @@
 import {
+	ORDER_ADMIN_LIST_FAILED,
+	ORDER_ADMIN_LIST_REQUEST,
+	ORDER_ADMIN_LIST_SUCCESS,
 	ORDER_CREATE_FAILED,
 	ORDER_CREATE_REQUEST,
 	ORDER_CREATE_RESET,
 	ORDER_CREATE_SUCCESS,
+	ORDER_DELIVER_FAILED,
+	ORDER_DELIVER_REQUEST,
+	ORDER_DELIVER_RESET,
+	ORDER_DELIVER_SUCCESS,
 	ORDER_DETAILS_FAILED,
 	ORDER_DETAILS_REQUEST,
 	ORDER_DETAILS_SUCCESS,
@@ -69,6 +76,34 @@ export const orderListReducer = (state = { orders: [] }, action) => {
 			return { loading: false, error: action.payload };
 		case ORDER_LIST_RESET:
 			return { orders: [] };
+		default:
+			return state;
+	}
+};
+
+export const orderListAdminReducer = (state = { orders: [] }, action) => {
+	switch (action.type) {
+		case ORDER_ADMIN_LIST_REQUEST:
+			return { loading: true };
+		case ORDER_ADMIN_LIST_SUCCESS:
+			return { loading: false, orders: action.payload };
+		case ORDER_ADMIN_LIST_FAILED:
+			return { loading: false, error: action.payload };
+		default:
+			return state;
+	}
+};
+
+export const orderDeliverReducer = (state = {}, action) => {
+	switch (action.type) {
+		case ORDER_DELIVER_REQUEST:
+			return { loading: true };
+		case ORDER_DELIVER_SUCCESS:
+			return { loading: false, success: true };
+		case ORDER_DELIVER_FAILED:
+			return { loading: false, error: action.payload };
+		case ORDER_DELIVER_RESET:
+			return {};
 		default:
 			return state;
 	}

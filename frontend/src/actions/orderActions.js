@@ -1,9 +1,15 @@
 import axios from 'axios';
 import { CART_CLEAR_ITEMS } from '../constants/cartConstants';
 import {
+	ORDER_ADMIN_LIST_FAILED,
+	ORDER_ADMIN_LIST_REQUEST,
+	ORDER_ADMIN_LIST_SUCCESS,
 	ORDER_CREATE_FAILED,
 	ORDER_CREATE_REQUEST,
 	ORDER_CREATE_SUCCESS,
+	ORDER_DELIVER_FAILED,
+	ORDER_DELIVER_REQUEST,
+	ORDER_DELIVER_SUCCESS,
 	ORDER_DETAILS_FAILED,
 	ORDER_DETAILS_REQUEST,
 	ORDER_DETAILS_SUCCESS,
@@ -99,6 +105,54 @@ export const getOrders = () => async (dispatch, getState) => {
 	} catch (e) {
 		dispatch({
 			type: ORDER_LIST_FAILED,
+			payload: e.response && e.response.data.detail ? e.response.data.detail : e.message
+		});
+	}
+};
+
+export const getOrdersAdmin = () => async (dispatch, getState) => {
+	try {
+		dispatch({ type: ORDER_ADMIN_LIST_REQUEST });
+
+		const {
+			userLogin: { userInfo }
+		} = getState();
+
+		const { data } = await axios('/api/orders/admin/', {
+			headers: { ContentType: 'application/json', Authorization: `Bearer ${userInfo.token}` }
+		});
+
+		dispatch({ type: ORDER_ADMIN_LIST_SUCCESS, payload: data });
+	} catch (e) {
+		dispatch({
+			type: ORDER_ADMIN_LIST_FAILED,
+			payload: e.response && e.response.data.detail ? e.response.data.detail : e.message
+		});
+	}
+};
+
+export const deliverOrder = id => async (dispatch, getState) => {
+	try {
+		dispatch({ type: ORDER_DELIVER_REQUEST });
+
+		const {
+			userLogin: { userInfo },
+			orderDetails: { order }
+		} = getState();
+
+		const { data } = await axios.put(
+			`/api/orders/${id}/deliver/`,
+			{},
+			{
+				headers: { Authorization: `Bearer ${userInfo.token}` }
+			}
+		);
+
+		dispatch({ type: ORDER_DELIVER_SUCCESS, payload: data });
+		dispatch({ type: ORDER_DETAILS_SUCCESS, payload: { ...order, isDelivered: true } });
+	} catch (e) {
+		dispatch({
+			type: ORDER_DELIVER_FAILED,
 			payload: e.response && e.response.data.detail ? e.response.data.detail : e.message
 		});
 	}
