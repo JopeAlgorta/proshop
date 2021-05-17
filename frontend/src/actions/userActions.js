@@ -75,32 +75,29 @@ export const signup = (name, email, password) => async dispatch => {
 	}
 };
 
-export const getUserDetails =
-	(id = null) =>
-	async (dispatch, getState) => {
-		try {
-			dispatch({ type: USER_DETAILS_REQUEST });
+export const getUserDetails = id => async (dispatch, getState) => {
+	try {
+		dispatch({ type: USER_DETAILS_REQUEST });
 
-			const {
-				userLogin: { userInfo }
-			} = getState();
+		const {
+			userLogin: { userInfo }
+		} = getState();
 
-			const { data } = await axios(id ? `/api/users/${id}/` : `/api/users/profile/`, {
-				headers: {
-					ContentType: 'application/json',
-					Authorization: `Bearer ${userInfo.token}`
-				}
-			});
+		const { data } = await axios(`/api/users/${id}/`, {
+			headers: {
+				ContentType: 'application/json',
+				Authorization: `Bearer ${userInfo.token}`
+			}
+		});
 
-			dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
-		} catch (error) {
-			dispatch({
-				type: USER_DETAILS_FAILED,
-				payload:
-					error.response && error.response.data.detail ? error.response.data.detail : error.message
-			});
-		}
-	};
+		dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: USER_DETAILS_FAILED,
+			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
+		});
+	}
+};
 
 export const logout = () => async dispatch => {
 	dispatch({ type: USER_LOGOUT });
@@ -192,6 +189,7 @@ export const adminUpdateUser = user => async (dispatch, getState) => {
 		dispatch({ type: ADMIN_USER_UPDATE_SUCCESS, payload: data });
 		dispatch({ type: ADMIN_USER_UPDATE_RESET });
 		dispatch({ type: USER_DETAILS_RESET });
+		if (Number(user.id) === userInfo.id) dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
 	} catch (error) {
 		dispatch({
 			type: ADMIN_USER_UPDATE_FAILED,

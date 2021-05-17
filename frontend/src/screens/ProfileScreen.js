@@ -35,7 +35,7 @@ const ProfileScreen = ({ history }) => {
 		if (!userInfo) history.push('/login');
 		else if (!user || !user.name || user.id !== userInfo.id || success) {
 			dispatch({ type: USER_UPDATE_RESET });
-			dispatch(getUserDetails());
+			dispatch(getUserDetails('profile'));
 			dispatch(getOrders());
 		} else {
 			setName(user.name);
@@ -110,9 +110,9 @@ const ProfileScreen = ({ history }) => {
 						<tbody>
 							{orders.map(o => (
 								<tr key={o.id}>
-									<Link to={`/order/${o.id}`}>
-										<td>{o.id}</td>
-									</Link>
+									<td>
+										<Link to={`/order/${o.id}`}>{o.id}</Link>
+									</td>
 									<td>{new Date(o.createdAt).toDateString()}</td>
 									<td>$ {o.totalPrice}</td>
 									{o.isPaid ? (
