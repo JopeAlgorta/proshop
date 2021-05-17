@@ -33,7 +33,7 @@ const ProfileScreen = ({ history }) => {
 
 	useEffect(() => {
 		if (!userInfo) history.push('/login');
-		else if (!user || !user.name || success) {
+		else if (!user || !user.name || user.id !== userInfo.id || success) {
 			dispatch({ type: USER_UPDATE_RESET });
 			dispatch(getUserDetails());
 			dispatch(getOrders());

@@ -21,7 +21,11 @@ import {
 	USER_LIST_RESET,
 	USER_DELETE_REQUEST,
 	USER_DELETE_SUCCESS,
-	USER_DELETE_FAILED
+	USER_DELETE_FAILED,
+	ADMIN_USER_UPDATE_REQUEST,
+	ADMIN_USER_UPDATE_SUCCESS,
+	ADMIN_USER_UPDATE_FAILED,
+	ADMIN_USER_UPDATE_RESET
 } from '../constants/userConstants';
 
 export const login = (email, password) => async dispatch => {
@@ -71,26 +75,39 @@ export const signup = (name, email, password) => async dispatch => {
 	}
 };
 
-export const getUserDetails = () => async (dispatch, getState) => {
-	try {
-		dispatch({ type: USER_DETAILS_REQUEST });
+export const getUserDetails =
+	(id = null) =>
+	async (dispatch, getState) => {
+		try {
+			dispatch({ type: USER_DETAILS_REQUEST });
 
-		const {
-			userLogin: { userInfo }
-		} = getState();
+			const {
+				userLogin: { userInfo }
+			} = getState();
 
-		const { data } = await axios(`/api/users/profile/`, {
-			headers: { ContentType: 'application/json', Authorization: `Bearer ${userInfo.token}` }
-		});
+			const { data } = id
+				? await axios(`/api/users/${id}/`, {
+						headers: {
+							ContentType: 'application/json',
+							Authorization: `Bearer ${userInfo.token}`
+						}
+				  })
+				: await axios(`/api/users/profile/`, {
+						headers: {
+							ContentType: 'application/json',
+							Authorization: `Bearer ${userInfo.token}`
+						}
+				  });
 
-		dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
-	} catch (error) {
-		dispatch({
-			type: USER_DETAILS_FAILED,
-			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
-		});
-	}
-};
+			dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
+		} catch (error) {
+			dispatch({
+				type: USER_DETAILS_FAILED,
+				payload:
+					error.response && error.response.data.detail ? error.response.data.detail : error.message
+			});
+		}
+	};
 
 export const logout = () => async dispatch => {
 	dispatch({ type: USER_LOGOUT });
@@ -162,6 +179,29 @@ export const deleteUser = id => async (dispatch, getState) => {
 	} catch (error) {
 		dispatch({
 			type: USER_DELETE_FAILED,
+			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
+		});
+	}
+};
+
+export const adminUpdateUser = user => async (dispatch, getState) => {
+	try {
+		dispatch({ type: ADMIN_USER_UPDATE_REQUEST });
+
+		const {
+			userLogin: { userInfo }
+		} = getState();
+
+		const { data } = await axios.put(`/api/users/${user.id}/`, user, {
+			headers: { ContentType: 'application/json', Authorization: `Bearer ${userInfo.token}` }
+		});
+
+		dispatch({ type: ADMIN_USER_UPDATE_SUCCESS, payload: data });
+		dispatch({ type: ADMIN_USER_UPDATE_RESET });
+		dispatch({ type: USER_DETAILS_RESET });
+	} catch (error) {
+		dispatch({
+			type: ADMIN_USER_UPDATE_FAILED,
 			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
 		});
 	}
