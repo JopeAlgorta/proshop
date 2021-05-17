@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, NotAuthenticated
 from ..models import Product
 from ..serializers import ProductSerializer
 
@@ -17,7 +17,10 @@ def getProductsOrCreateOne(request):
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
 
-    if request.user and not request.user.is_staff:
+    if not request.user:
+        raise NotAuthenticated
+
+    if not request.user.is_staff:
         raise PermissionDenied
 
     if request.method == 'POST':
@@ -33,7 +36,6 @@ def getProductsOrCreateOne(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
 def showUpdateOrDeleteProduct(request, pk):
     product = get_object_or_404(Product, id=pk)
 
@@ -41,6 +43,8 @@ def showUpdateOrDeleteProduct(request, pk):
         serializer = ProductSerializer(product)
         return Response(serializer.data)
 
+    if not request.user:
+        raise NotAuthenticated
     if not request.user.is_staff:
         raise PermissionDenied
 
