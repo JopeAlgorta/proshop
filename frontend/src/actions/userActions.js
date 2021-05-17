@@ -85,19 +85,12 @@ export const getUserDetails =
 				userLogin: { userInfo }
 			} = getState();
 
-			const { data } = id
-				? await axios(`/api/users/${id}/`, {
-						headers: {
-							ContentType: 'application/json',
-							Authorization: `Bearer ${userInfo.token}`
-						}
-				  })
-				: await axios(`/api/users/profile/`, {
-						headers: {
-							ContentType: 'application/json',
-							Authorization: `Bearer ${userInfo.token}`
-						}
-				  });
+			const { data } = await axios(id ? `/api/users/${id}/` : `/api/users/profile/`, {
+				headers: {
+					ContentType: 'application/json',
+					Authorization: `Bearer ${userInfo.token}`
+				}
+			});
 
 			dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
 		} catch (error) {
