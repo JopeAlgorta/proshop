@@ -3,7 +3,7 @@ import { Button, Col, Modal, Row, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Link } from 'react-router-dom';
-import { listProducts } from '../actions/productActions';
+import { deleteProduct, listProducts } from '../actions/productActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Rating from '../components/Rating';
@@ -12,7 +12,7 @@ const ProductListScreen = ({ history }) => {
 	const dispatch = useDispatch();
 	const { products, loading, error } = useSelector(state => state.productList);
 	const { userInfo } = useSelector(state => state.userLogin);
-	const { success } = useSelector(state => state.userDelete);
+	const { success } = useSelector(state => state.productDelete);
 
 	const [modal, setModal] = useState({ show: false, id: '' });
 
@@ -22,7 +22,7 @@ const ProductListScreen = ({ history }) => {
 	}, [dispatch, userInfo, history, success]);
 
 	const onDeleteConfirm = () => {
-		// dispatch(deleteUser(modal.id));
+		dispatch(deleteProduct(modal.id));
 		setModal({ id: '', show: false });
 	};
 
@@ -33,7 +33,7 @@ const ProductListScreen = ({ history }) => {
 					<h1>Products</h1>
 				</Col>
 				<Col md={2} className='text-right'>
-					<Link to='/admin/product/'>
+					<Link to='/admin/product/create'>
 						<Button variant='primary'>
 							<i className='fas fa-plus'></i> Add product
 						</Button>
