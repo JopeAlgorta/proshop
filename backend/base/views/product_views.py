@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated
-from ..models import Product
-from ..serializers import ProductSerializer
+from ..models import Product, Review
+from ..serializers import ProductSerializer, ReviewSerializer
 
 
 @api_view(['GET', 'POST'])
@@ -78,3 +78,43 @@ def uploadImage(request, pk):
     product.save()
 
     return Response('Image uploaded successfully.')
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def createProductReview(request, pk):
+    user = request.user
+    product = get_object_or_404(Product, id=pk)
+    data = request.data
+
+    # 1 Review already exist
+    is_reviewed = product.reviews.filter(user=user).exists()
+
+    if is_reviewed:
+        return Response({'detail': 'Product already reviewed.'}, status.HTTP_400_BAD_REQUEST)
+
+    if data['rating'] == 0:
+        return Response({'detail': 'Please select a rating.'}, status.HTTP_400_BAD_REQUEST)
+
+    # 3 Create review
+    review = Review.objects.create(
+        product=product,
+        user=user,
+        name=user.first_name,
+        rating=data['rating'],
+        comment=data['comment'] if 'comment' in data else ''
+    )
+
+    reviews = product.reviews.all()
+    product.numReviews = len(reviews)
+
+    rating = 0
+    for r in reviews:
+        rating += r.rating
+
+    product.rating = rating / len(reviews)
+
+    product.save()
+
+    serializer = ReviewSerializer(review, many=False)
+    return Response(serializer.data, status.HTTP_201_CREATED)
