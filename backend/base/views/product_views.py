@@ -50,6 +50,13 @@ def getProductsOrCreateOne(request):
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
+def getTopProducts(request):
+    products = Product.objects.filter(rating__gte=4).order_by('-rating')[0:5]
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
+
+
 @api_view(['GET', 'PUT', 'DELETE'])
 def showUpdateOrDeleteProduct(request, pk):
     product = get_object_or_404(Product, id=pk)
