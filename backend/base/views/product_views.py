@@ -15,7 +15,7 @@ from ..serializers import ProductSerializer, ReviewSerializer
 def getProductsOrCreateOne(request):
     if request.method == 'GET':
         keyword = request.query_params.get('keyword', '')
-        products = Product.objects.filter(name__contains=keyword)
+        products = Product.objects.filter(name__contains=keyword).order_by('-id')
 
         page = request.query_params.get('page', 1)
         paginator = Paginator(products, 10)

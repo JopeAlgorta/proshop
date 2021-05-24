@@ -71,7 +71,7 @@ def createOrGetOrders(request):
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def getOrders(request):
-    orders = Order.objects.all()
+    orders = Order.objects.all().order_by('-id')
     page = request.query_params.get('page', 1)
     paginator = Paginator(orders, 10)
 

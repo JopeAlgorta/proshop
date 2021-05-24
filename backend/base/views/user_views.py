@@ -77,7 +77,7 @@ def getOrUpdateUserProfile(request):
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def getUsers(request):
-    users = User.objects.all()
+    users = User.objects.all().order_by('-id')
     page = request.query_params.get('page', 1)
     paginator = Paginator(users, 10)
 
