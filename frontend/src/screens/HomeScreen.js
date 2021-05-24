@@ -6,6 +6,7 @@ import Product from '../components/Product';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Paginate from '../components/Paginate';
+import ProductCarousel from '../components/ProductCarousel';
 
 function HomeScreen({ history }) {
 	const dispatch = useDispatch();
@@ -19,7 +20,8 @@ function HomeScreen({ history }) {
 
 	return (
 		<div>
-			<h1>Latest Products</h1>
+			{!keyword && <ProductCarousel />}
+			<h1 className='mt-3'>Latest Products</h1>
 
 			{loading ? (
 				<Loader />
