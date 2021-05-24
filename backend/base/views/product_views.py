@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -13,9 +14,23 @@ from ..serializers import ProductSerializer, ReviewSerializer
 @api_view(['GET', 'POST'])
 def getProductsOrCreateOne(request):
     if request.method == 'GET':
-        products = Product.objects.all()
+        keyword = request.query_params.get('keyword', '')
+        products = Product.objects.filter(name__contains=keyword)
+
+        page = request.query_params.get('page', 1)
+        paginator = Paginator(products, 10)
+
+        try:
+            products = paginator.page(page)
+        except PageNotAnInteger:
+            products = paginator.page(1)
+            page = 1
+        except EmptyPage:
+            products = paginator.page(paginator.num_pages)
+            page = paginator.num_pages
+
         serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+        return Response({'page': int(page), 'pages': paginator.num_pages, 'products': serializer.data})
 
     if not request.user:
         raise NotAuthenticated
