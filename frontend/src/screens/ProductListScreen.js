@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Fragment } from 'react';
 import { Button, Col, Modal, Row, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -7,19 +8,22 @@ import { deleteProduct, listProducts } from '../actions/productActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Rating from '../components/Rating';
+import Paginate from '../components/Paginate';
 
 const ProductListScreen = ({ history }) => {
 	const dispatch = useDispatch();
-	const { products, loading, error } = useSelector(state => state.productList);
+	const { products, loading, error, pages, page } = useSelector(state => state.productList);
 	const { userInfo } = useSelector(state => state.userLogin);
 	const { success } = useSelector(state => state.productDelete);
 
 	const [modal, setModal] = useState({ show: false, id: '' });
 
+	let keyword = history.location.search;
+
 	useEffect(() => {
 		if (!userInfo || !userInfo.isAdmin) return history.push('/');
-		dispatch(listProducts());
-	}, [dispatch, userInfo, history, success]);
+		dispatch(listProducts(keyword));
+	}, [dispatch, userInfo, history, success, keyword]);
 
 	const onDeleteConfirm = () => {
 		dispatch(deleteProduct(modal.id));
@@ -45,46 +49,51 @@ const ProductListScreen = ({ history }) => {
 			) : error ? (
 				<Message variant='danger'>{error}</Message>
 			) : (
-				<Table responsive bordered hover className='table-sm'>
-					<thead>
-						<tr>
-							<th>ID</th>
-							<th>Name</th>
-							<th>Category</th>
-							<th className='text-center'>Rating</th>
-							<th className='text-center'>Stock</th>
-							<th className='text-center'>Price</th>
-							<th className='text-center'>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{products.map(p => (
-							<tr key={p.id}>
-								<td>{p.id}</td>
-								<td>{p.name}</td>
-								<td>{p.category}</td>
-								<td className='text-center'>
-									<Rating value={p.rating} color={'#f8e825'} />
-								</td>
-								<td className='text-center'>{p.countInStock}</td>
-								<td className='text-center'>$ {p.price}</td>
-								<td className='text-center'>
-									<LinkContainer to={`/admin/product/${p.id}`}>
-										<Button variant='info' className='btn-sm'>
-											<i className='fas fa-edit'></i>
-										</Button>
-									</LinkContainer>
-									<Button
-										variant='danger'
-										className='btn-sm'
-										onClick={e => setModal({ show: true, id: p.id })}>
-										<i className='fas fa-trash'></i>
-									</Button>
-								</td>
+				<Fragment>
+					<Table responsive bordered hover className='table-sm'>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Name</th>
+								<th>Category</th>
+								<th className='text-center'>Rating</th>
+								<th className='text-center'>Stock</th>
+								<th className='text-center'>Price</th>
+								<th className='text-center'>Actions</th>
 							</tr>
-						))}
-					</tbody>
-				</Table>
+						</thead>
+						<tbody>
+							{products.map(p => (
+								<tr key={p.id}>
+									<td>{p.id}</td>
+									<td>{p.name}</td>
+									<td>{p.category}</td>
+									<td className='text-center'>
+										<Rating value={p.rating} color={'#f8e825'} />
+									</td>
+									<td className='text-center'>{p.countInStock}</td>
+									<td className='text-center'>$ {p.price}</td>
+									<td className='text-center'>
+										<LinkContainer to={`/admin/product/${p.id}`}>
+											<Button variant='info' className='btn-sm'>
+												<i className='fas fa-edit'></i>
+											</Button>
+										</LinkContainer>
+										<Button
+											variant='danger'
+											className='btn-sm'
+											onClick={e => setModal({ show: true, id: p.id })}>
+											<i className='fas fa-trash'></i>
+										</Button>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</Table>
+					<Row className='justify-content-center'>
+						<Paginate pages={pages} page={page} isAdmin />
+					</Row>
+				</Fragment>
 			)}
 			<Modal show={modal.show} onHide={() => setModal({ id: '', show: false })}>
 				<Modal.Header closeButton>
