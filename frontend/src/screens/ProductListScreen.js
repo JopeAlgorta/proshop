@@ -91,7 +91,7 @@ const ProductListScreen = ({ history }) => {
 						</tbody>
 					</Table>
 					<Row className='justify-content-center'>
-						<Paginate pages={pages} page={page} isAdmin />
+						<Paginate pages={pages} page={page} isAdmin entity='products' />
 					</Row>
 				</Fragment>
 			)}

@@ -110,26 +110,28 @@ export const getOrders = () => async (dispatch, getState) => {
 	}
 };
 
-export const getOrdersAdmin = () => async (dispatch, getState) => {
-	try {
-		dispatch({ type: ORDER_ADMIN_LIST_REQUEST });
+export const getOrdersAdmin =
+	(page = '') =>
+	async (dispatch, getState) => {
+		try {
+			dispatch({ type: ORDER_ADMIN_LIST_REQUEST });
 
-		const {
-			userLogin: { userInfo }
-		} = getState();
+			const {
+				userLogin: { userInfo }
+			} = getState();
 
-		const { data } = await axios('/api/orders/admin/', {
-			headers: { ContentType: 'application/json', Authorization: `Bearer ${userInfo.token}` }
-		});
+			const { data } = await axios(`/api/orders/admin/${page}`, {
+				headers: { ContentType: 'application/json', Authorization: `Bearer ${userInfo.token}` }
+			});
 
-		dispatch({ type: ORDER_ADMIN_LIST_SUCCESS, payload: data });
-	} catch (e) {
-		dispatch({
-			type: ORDER_ADMIN_LIST_FAILED,
-			payload: e.response && e.response.data.detail ? e.response.data.detail : e.message
-		});
-	}
-};
+			dispatch({ type: ORDER_ADMIN_LIST_SUCCESS, payload: data });
+		} catch (e) {
+			dispatch({
+				type: ORDER_ADMIN_LIST_FAILED,
+				payload: e.response && e.response.data.detail ? e.response.data.detail : e.message
+			});
+		}
+	};
 
 export const deliverOrder = id => async (dispatch, getState) => {
 	try {

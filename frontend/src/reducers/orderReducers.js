@@ -86,7 +86,7 @@ export const orderListAdminReducer = (state = { orders: [] }, action) => {
 		case ORDER_ADMIN_LIST_REQUEST:
 			return { loading: true };
 		case ORDER_ADMIN_LIST_SUCCESS:
-			return { loading: false, orders: action.payload };
+			return { loading: false, ...action.payload };
 		case ORDER_ADMIN_LIST_FAILED:
 			return { loading: false, error: action.payload };
 		default:
