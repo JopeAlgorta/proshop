@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -71,9 +72,20 @@ def createOrGetOrders(request):
 @permission_classes([IsAdminUser])
 def getOrders(request):
     orders = Order.objects.all()
-    serializer = OrderSerializer(orders, many=True)
+    page = request.query_params.get('page', 1)
+    paginator = Paginator(orders, 10)
 
-    return Response(serializer.data)
+    try:
+        orders = paginator.page(page)
+    except PageNotAnInteger:
+        orders = paginator.page(1)
+        page = 1
+    except EmptyPage:
+        orders = paginator.page(paginator.num_pages)
+        page = paginator.num_pages
+
+    serializer = OrderSerializer(orders, many=True)
+    return Response({'page': int(page), 'pages': paginator.num_pages, 'orders': serializer.data})
 
 
 @api_view(['GET'])
