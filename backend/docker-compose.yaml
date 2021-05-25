@@ -1,0 +1,27 @@
+version: '3'
+services:
+    app:
+        build: .
+        container_name: proshop
+        restart: always
+        stdin_open: true
+        tty: true
+        volumes:
+            - ../backend/:/app
+        ports:
+            - 8000:80
+        depends_on:
+            - db
+        environment:
+            - DEBUG=True
+            - DATABASE_NAME=proshop
+            - DATABASE_HOST=proshop.cc4ueymmrfqt.us-east-1.rds.amazonaws.com
+            - DATABASE_PORT=5432
+            - DATABASE_USER=postgres
+            - DATABASE_PASSWORD=postgres
+    db:
+        image: postgres:13-alpine
+        environment:
+            - POSTGRES_DB=proshop
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
