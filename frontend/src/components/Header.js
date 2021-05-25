@@ -21,47 +21,45 @@ const Header = () => {
 						<Navbar.Brand>ProShop</Navbar.Brand>
 					</LinkContainer>
 					<Navbar.Toggle aria-controls='basic-navbar-nav' />
-					<Navbar.Collapse id='basic-navbar-nav' className='justify-content-between'>
+					<Navbar.Collapse id='basic-navbar-nav'>
 						<SearchBox />
-						<div>
-							<Nav className='mr-auto'>
-								<LinkContainer to='/cart'>
+						<Nav className='ml-auto'>
+							<LinkContainer to='/cart'>
+								<Nav.Link>
+									<i className='fas fa-shopping-cart'></i> Cart
+								</Nav.Link>
+							</LinkContainer>
+
+							{userInfo ? (
+								<NavDropdown title={userInfo.name} id='username'>
+									<LinkContainer to='/profile'>
+										<NavDropdown.Item>Profile</NavDropdown.Item>
+									</LinkContainer>
+									{userInfo.isAdmin && (
+										<LinkContainer to='/admin/users'>
+											<NavDropdown.Item>Users</NavDropdown.Item>
+										</LinkContainer>
+									)}
+									{userInfo.isAdmin && (
+										<LinkContainer to='/admin/products'>
+											<NavDropdown.Item>Products</NavDropdown.Item>
+										</LinkContainer>
+									)}
+									{userInfo.isAdmin && (
+										<LinkContainer to='/admin/orders'>
+											<NavDropdown.Item>Orders</NavDropdown.Item>
+										</LinkContainer>
+									)}
+									<NavDropdown.Item onClick={onLogout}>Logout</NavDropdown.Item>
+								</NavDropdown>
+							) : (
+								<LinkContainer to='/login'>
 									<Nav.Link>
-										<i className='fas fa-shopping-cart'></i> Cart
+										<i className='fas fa-user'></i> Login
 									</Nav.Link>
 								</LinkContainer>
-
-								{userInfo ? (
-									<NavDropdown title={userInfo.name} id='username'>
-										<LinkContainer to='/profile'>
-											<NavDropdown.Item>Profile</NavDropdown.Item>
-										</LinkContainer>
-										{userInfo.isAdmin && (
-											<LinkContainer to='/admin/users'>
-												<NavDropdown.Item>Users</NavDropdown.Item>
-											</LinkContainer>
-										)}
-										{userInfo.isAdmin && (
-											<LinkContainer to='/admin/products'>
-												<NavDropdown.Item>Products</NavDropdown.Item>
-											</LinkContainer>
-										)}
-										{userInfo.isAdmin && (
-											<LinkContainer to='/admin/orders'>
-												<NavDropdown.Item>Orders</NavDropdown.Item>
-											</LinkContainer>
-										)}
-										<NavDropdown.Item onClick={onLogout}>Logout</NavDropdown.Item>
-									</NavDropdown>
-								) : (
-									<LinkContainer to='/login'>
-										<Nav.Link>
-											<i className='fas fa-user'></i> Login
-										</Nav.Link>
-									</LinkContainer>
-								)}
-							</Nav>
-						</div>
+							)}
+						</Nav>
 					</Navbar.Collapse>
 				</Container>
 			</Navbar>

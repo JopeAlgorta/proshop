@@ -26,7 +26,7 @@ const OrderListScreen = ({ history }) => {
 		dispatch(deliverOrder(modal.id));
 		setModal({ id: '', show: false });
 	};
-	console.log('Orders', orders);
+
 	return (
 		<div>
 			<h1>Orders</h1>

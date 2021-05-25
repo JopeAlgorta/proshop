@@ -71,7 +71,7 @@ const ProductFormScreen = ({ match, history }) => {
 			formData.append('image', image);
 
 			await axios.post(`/api/products/${productId}/image/`, formData, {
-				headers: { 'Content-Type': 'multipart/form-data' }
+				headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${userInfo.token}` }
 			});
 		}
 	};

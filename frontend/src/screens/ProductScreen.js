@@ -40,8 +40,7 @@ function ProductScreen({ match, history }) {
 		const productId = match.params.id;
 		dispatch(createProductReview(productId, { rating, comment }));
 	};
-	console.log('loading', loading);
-	console.log('successReview', successReview);
+
 	return (
 		<div>
 			<Link to='/' className='btn btn-light my-3'>

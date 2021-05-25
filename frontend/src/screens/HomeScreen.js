@@ -27,9 +27,9 @@ function HomeScreen({ history }) {
 				<Loader />
 			) : error ? (
 				<Message variant='danger'>{error}</Message>
-			) : products.length === 0 ? (
+			) : products.length === 0 && keyword ? (
 				<Message variant='info'>
-					No results for search: "{keyword && keyword.split('?keyword=')[1].split('&')[0]}"
+					No results for search: "{keyword.split('?keyword=')[1].split('&')[0]}"
 				</Message>
 			) : (
 				<div>
