@@ -1,4 +1,3 @@
-
 # Created by https://www.toptal.com/developers/gitignore/api/react,django,vscode,pycharm,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=react,django,vscode,pycharm,python
 
@@ -157,7 +156,6 @@ Thumbs.db
 
 # profiling data
 .prof
-
 
 ### PyCharm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
@@ -330,7 +328,6 @@ fabric.properties
 
 # profiling data
 
-
 ### react ###
 .DS_*
 logs
@@ -358,3 +355,4 @@ myenv/
 backend/db.sqlite3
 backend/.idea
 backend/static/images/**
+backend/backend/.env
