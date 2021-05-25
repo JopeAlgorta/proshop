@@ -356,3 +356,4 @@ backend/db.sqlite3
 backend/.idea
 backend/static/images/**
 backend/backend/.env
+backend/frontend/public/images/**
