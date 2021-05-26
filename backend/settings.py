@@ -31,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!$^qfvhym%-n2%n)%_xr*j6c@rr0ab(ost+qo4e#2sul)+aai0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG') if os.getcwd() != '/app' else os.environ.get('DEBUG')
+DEBUG = os.getcwd() != '/app'
 ALLOWED_HOSTS = ['localhost', 'proshop-django-react.herokuapp.com']
 
 
