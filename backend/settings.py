@@ -15,9 +15,10 @@ from pathlib import Path
 import environ
 import os
 
-# Initialise environment variables
-env = environ.Env()
-environ.Env.read_env()
+if os.getcwd() != '/app':
+    # Initialise environment variables
+    env = environ.Env()
+    environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!$^qfvhym%-n2%n)%_xr*j6c@rr0ab(ost+qo4e#2sul)+aai0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = env('DEBUG') if os.getcwd() != '/app' else os.environ.get('DEBUG')
 ALLOWED_HOSTS = ['localhost', 'proshop-django-react.herokuapp.com']
 
 
@@ -127,10 +128,10 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': env('DATABASE_HOST'),
-        'NAME': env('DATABASE_NAME'),
-        'USER': env('DATABASE_USER'),
-        'PASSWORD': env('DATABASE_PASSWORD'),
+        'HOST': env('DATABASE_HOST') if os.getcwd() != '/app' else os.environ.get('DATABASE_HOST'),
+        'NAME': env('DATABASE_NAME') if os.getcwd() != '/app' else os.environ.get('DATABASE_NAME'),
+        'USER': env('DATABASE_USER') if os.getcwd() != '/app' else os.environ.get('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASSWORD') if os.getcwd() != '/app' else os.environ.get('DATABASE_PASSWORD'),
     }
 }
 
@@ -192,8 +193,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
 
-AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID') if os.getcwd() != '/app' else os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY') if os.getcwd() != '/app' else os.environ.get('AWS_SECRET_ACCESS_KEY')
 
 AWS_STORAGE_BUCKET_NAME = 'django-react-proshop'
 AWS_QUERYSTRING_AUTH = False
