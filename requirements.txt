@@ -8,3 +8,4 @@ django-storages>=1.11.1
 boto3>=1.17.79
 whitenoise>=5.2.0
 gunicorn>=20.1.0
+django-environ>=0.4.5
