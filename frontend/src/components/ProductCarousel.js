@@ -21,7 +21,7 @@ const ProductCarousel = () => {
 	) : (
 		<Carousel pause='hover' className='bg-dark'>
 			{products.map(p => (
-				<Carousel.Item interval={40000000} key={p.id}>
+				<Carousel.Item key={p.id}>
 					<Link to={`/product/${p.id}`}>
 						<div className='image-container'>
 							<Image src={p.image} alt={p.name} roundedCircle />

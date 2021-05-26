@@ -355,5 +355,5 @@ myenv/
 db.sqlite3
 .idea
 static/images/**
-backend/.env
 frontend/public/images/**
+backend/.env
