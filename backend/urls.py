@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='index.html')),
+    path('', TemplateView.as_view(template_name='build/index.html')),
     path('admin/', admin.site.urls),
     path('api/users/', include('base.urls.users')),
     path('api/orders/', include('base.urls.orders')),
