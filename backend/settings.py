@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 import environ
+import os
 
 # Initialise environment variables
 env = environ.Env()
@@ -47,8 +48,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'storages',
 
-    'base.apps.BaseConfig',
-    'frontend'
+    'base.apps.BaseConfig'
 ]
 
 REST_FRAMEWORK = {
@@ -105,7 +105,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'frontend/build/'],
+        'DIRS': [os.path.join(BASE_DIR, 'frontend/build')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
