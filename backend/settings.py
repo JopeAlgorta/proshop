@@ -31,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!$^qfvhym%-n2%n)%_xr*j6c@rr0ab(ost+qo4e#2sul)+aai0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getcwd() != '/app'
+DEBUG = True
 ALLOWED_HOSTS = ['localhost', 'proshop-django-react.herokuapp.com']
 
 
@@ -197,3 +197,6 @@ AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY') if os.getcwd() != '/app' el
 
 AWS_STORAGE_BUCKET_NAME = 'django-react-proshop'
 AWS_QUERYSTRING_AUTH = False
+
+if os.getcwd() == '/app':
+    DEBUG = False
